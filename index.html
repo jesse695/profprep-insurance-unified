@@ -7,7 +7,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+const INS_LINKS = {"ok":{"pc":{"6mo":"https://buy.stripe.com/00w14gbuv8cO3KU4bU6Nb0g"},"lh":{"6mo":"https://buy.stripe.com/6oU7sE0PR1Oqepy23M6Nb0h"}},"tx":{"pc":{"6mo":"https://buy.stripe.com/7sY4gscyz78Ka9i4bU6Nb0i"},"lh":{"6mo":"https://buy.stripe.com/00wbIU8ijfFg0yIdMu6Nb0j"}},"ks":{"pc":{"6mo":"https://buy.stripe.com/8x23co1TVakWepyaAi6Nb0k"},"lh":{"6mo":"https://buy.stripe.com/dRmbIUgOP1OqftCbEm6Nb0l"}},"la":{"pc":{"6mo":"https://buy.stripe.com/00w5kwbuvbp02GQ5fY6Nb0m"},"lh":{"6mo":"https://buy.stripe.com/eVq8wI6abgJk81agYG6Nb0n"}},"mo":{"pc":{"6mo":"https://buy.stripe.com/bJeeV6buvct4dlufUC6Nb0o"},"lh":{"6mo":"https://buy.stripe.com/14A00cdCD1Oq5T26k26Nb0p"}},"ny":{"pc":{"6mo":"https://buy.stripe.com/14AaEQcyzeBc3KU8sa6Nb0q"},"lh":{"6mo":"https://buy.stripe.com/14AfZabuv1OqftCaAi6Nb0r"}},"ca":{"pc":{"6mo":"https://buy.stripe.com/cNifZa567gJk6X623M6Nb0s"},"lh":{"6mo":"https://buy.stripe.com/9B614g7ef0Kmchq8sa6Nb0t"}},"fl":{"pc":{"6mo":"https://buy.stripe.com/5kQaEQ6ab78K6X623M6Nb0u"},"lh":{"6mo":"https://buy.stripe.com/3cIbIU4239gSa9icIq6Nb0v"}}};
+function updateInsLink(){
+  var state=document.getElementById('ins-state').value;
+  var line=document.getElementById('ins-line').value;
+  var plan=document.getElementById('ins-plan').value;
+  var note=document.getElementById('ins-pay-note');
+  var btn=document.getElementById('ins-pay-btn');
+  if(!state){note.textContent='Select your state to continue';btn.style.opacity='.4';return;}
+  var url=INS_LINKS[state]&&INS_LINKS[state][line]&&INS_LINKS[state][line][plan];
+  if(!url&&plan==='sub'){url=INS_LINKS[state]&&INS_LINKS[state][line]&&INS_LINKS[state][line]['6mo'];}
+  if(url){btn.href=url;btn.style.opacity='1';note.textContent=plan==='6mo'?'$79 one-time · 6 months full access':'$29/month · cancel anytime';}
+}
+function goToInsPay(){
+  var btn=document.getElementById('ins-pay-btn');
+  if(!btn.href||btn.href==='#'||btn.href===window.location.href+'#'){return false;}
+  return true;
+}
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -317,35 +335,45 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
 <!-- PAYMENT WALL -->
 <div id="payment-screen" style="display:none;position:fixed;inset:0;background:#1C1410;align-items:center;justify-content:center;z-index:999;padding:2rem;flex-direction:column;text-align:center">
-  <div style="max-width:420px;width:100%">
+  <div style="max-width:460px;width:100%">
     <div style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:1.5rem"><span style="color:#E8A838">Prof</span><span style="color:#C4622D">Prep</span></div>
     <div style="background:rgba(255,255,255,.04);border:1px solid rgba(196,98,45,.2);border-radius:12px;padding:1.75rem;margin-bottom:1.25rem">
-      <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:1.25rem">Your email was not found or your access has expired.<br><br>Purchase access to get started.</div>
-      <div style="font-family:monospace;font-size:36px;color:#C4622D;margin-bottom:.35rem">$79</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.25);margin-bottom:1.25rem">One-time &middot; 6 months full access</div>
-            <p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:.75rem;font-weight:600">Property &amp; Casualty (P&amp;C)</p>
-      <div class="state-options">
-        <a href="https://buy.stripe.com/00w14gbuv8cO3KU4bU6Nb0g" class="state-opt"><span>🟥</span><span>Oklahoma</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/7sY4gscyz78Ka9i4bU6Nb0i" class="state-opt"><span>⭐</span><span>Texas</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/8x23co1TVakWepyaAi6Nb0k" class="state-opt"><span>🌻</span><span>Kansas</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/00w5kwbuvbp02GQ5fY6Nb0m" class="state-opt"><span>⚜️</span><span>Louisiana</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/bJeeV6buvct4dlufUC6Nb0o" class="state-opt"><span>🏛️</span><span>Missouri</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/5kQaEQ6ab78K6X623M6Nb0u" class="state-opt"><span>🌴</span><span>Florida</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/cNifZa567gJk6X623M6Nb0s" class="state-opt"><span>🐻</span><span>California</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/14AaEQcyzeBc3KU8sa6Nb0q" class="state-opt"><span>🗽</span><span>New York</span><span class="sopt-price">$29</span></a>
+      <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:1.5rem">Your email was not found or your access has expired.<br>Select your state, line, and plan to get started.</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:1.25rem">
+        <div>
+          <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.4rem">State</label>
+          <select id="ins-state" onchange="updateInsLink()" style="width:100%;padding:.65rem .5rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:white;font-size:12px;font-family:inherit;appearance:none;cursor:pointer">
+            <option value="">State...</option>
+            <option value="ok">🟥 Oklahoma</option>
+            <option value="tx">⭐ Texas</option>
+            <option value="ks">🌻 Kansas</option>
+            <option value="la">⚜️ Louisiana</option>
+            <option value="mo">🏛️ Missouri</option>
+            <option value="ny">🗽 New York</option>
+            <option value="ca">🐻 California</option>
+            <option value="fl">🌴 Florida</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.4rem">Line</label>
+          <select id="ins-line" onchange="updateInsLink()" style="width:100%;padding:.65rem .5rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:white;font-size:12px;font-family:inherit;appearance:none;cursor:pointer">
+            <option value="pc">P&amp;C</option>
+            <option value="lh">L&amp;H</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.4rem">Plan</label>
+          <select id="ins-plan" onchange="updateInsLink()" style="width:100%;padding:.65rem .5rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:white;font-size:12px;font-family:inherit;appearance:none;cursor:pointer">
+            <option value="6mo">$79 / 6mo</option>
+            <option value="sub">$29/mo</option>
+          </select>
+        </div>
       </div>
-      <p style="font-size:13px;color:rgba(255,255,255,.5);margin:.75rem 0;font-weight:600">Life &amp; Health (L&amp;H)</p>
-      <div class="state-options">
-        <a href="https://buy.stripe.com/6oU7sE0PR1Oqepy23M6Nb0h" class="state-opt"><span>🟥</span><span>Oklahoma</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/00wbIU8ijfFg0yIdMu6Nb0j" class="state-opt"><span>⭐</span><span>Texas</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/dRmbIUgOP1OqftCbEm6Nb0l" class="state-opt"><span>🌻</span><span>Kansas</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/eVq8wI6abgJk81agYG6Nb0n" class="state-opt"><span>⚜️</span><span>Louisiana</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/14A00cdCD1Oq5T26k26Nb0p" class="state-opt"><span>🏛️</span><span>Missouri</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/3cIbIU4239gSa9icIq6Nb0v" class="state-opt"><span>🌴</span><span>Florida</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/9B614g7ef0Kmchq8sa6Nb0t" class="state-opt"><span>🐻</span><span>California</span><span class="sopt-price">$29</span></a>
-        <a href="https://buy.stripe.com/14AfZabuv1OqftCaAi6Nb0r" class="state-opt"><span>🗽</span><span>New York</span><span class="sopt-price">$29</span></a>
-      </div>
-      <div style="font-size:11px;color:rgba(255,255,255,.2)">Use the same email at checkout that you sign in with.</div>
+
+      <a id="ins-pay-btn" href="#" onclick="return goToInsPay()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#C4622D;color:white;font-size:14px;font-weight:700;padding:13px;border-radius:8px;text-decoration:none;margin-bottom:.75rem">Get Access &rarr;</a>
+      <div id="ins-pay-note" style="font-size:11px;color:rgba(255,255,255,.2)">Select your state to continue</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.15);margin-top:.4rem">Use the same email at checkout that you sign in with.</div>
     </div>
     <button type="button" onclick="showAuth()" style="background:none;border:none;color:rgba(255,255,255,.25);font-size:12px;cursor:pointer">&larr; Use a different email</button>
   </div>
