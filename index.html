@@ -608,7 +608,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 <div class="pb-toast" id="pb-toast">🏆 New Personal Best!</div>
 
 <script>
-const EXAM_TYPE = 'ok_insurance_pc';
+let EXAM_TYPE = null; // set dynamically after login from user's purchased exam type
 const ALLOC = { guide:10, tutor:75, adaptive_exam:25, sim:10 };
 
 // Fallback config if get_config fails
