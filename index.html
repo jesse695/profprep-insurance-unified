@@ -352,13 +352,11 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
             <option value="mo">🏛️ Missouri</option>
             <option value="ny">🗽 New York</option>
             <option value="ca">🐻 California</option>
-            <option value="fl">🌴 Florida</option>        <option value="ny">🗽 New York</option>
-        <option value="ca">🐻 California</option>
-        <option value="fl">🌴 Florida</option>
-        <option value="wa">🌲 Washington</option>
-        <option value="de">💙 Delaware</option>
-        <option value="ma">🦞 Massachusetts</option>
-        <option value="ga">🍑 Georgia</option>
+            <option value="fl">🌴 Florida</option>
+            <option value="wa">🌲 Washington</option>
+            <option value="de">💙 Delaware</option>
+            <option value="ma">🦞 Massachusetts</option>
+            <option value="ga">🍑 Georgia</option>
           </select>
         </div>
         <div>
@@ -608,6 +606,34 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 <div class="pb-toast" id="pb-toast">🏆 New Personal Best!</div>
 
 <script>
+const STATE_MAP_INS = {
+  'ok_insurance_pc':  {name:'Oklahoma',      abbr:'OK', authority:'OID',   flag:'🟥', line:'P&C'},
+  'ok_insurance_lh':  {name:'Oklahoma',      abbr:'OK', authority:'OID',   flag:'🟥', line:'L&H'},
+  'tx_insurance_pc':  {name:'Texas',         abbr:'TX', authority:'TDI',   flag:'⭐', line:'P&C'},
+  'tx_insurance_lh':  {name:'Texas',         abbr:'TX', authority:'TDI',   flag:'⭐', line:'L&H'},
+  'ks_insurance_pc':  {name:'Kansas',        abbr:'KS', authority:'KID',   flag:'🌻', line:'P&C'},
+  'ks_insurance_lh':  {name:'Kansas',        abbr:'KS', authority:'KID',   flag:'🌻', line:'L&H'},
+  'la_insurance_pc':  {name:'Louisiana',     abbr:'LA', authority:'LDI',   flag:'⚜️', line:'P&C'},
+  'la_insurance_lh':  {name:'Louisiana',     abbr:'LA', authority:'LDI',   flag:'⚜️', line:'L&H'},
+  'mo_insurance_pc':  {name:'Missouri',      abbr:'MO', authority:'MDCI',  flag:'🏛️', line:'P&C'},
+  'mo_insurance_lh':  {name:'Missouri',      abbr:'MO', authority:'MDCI',  flag:'🏛️', line:'L&H'},
+  'ny_insurance_pc':  {name:'New York',      abbr:'NY', authority:'NYDFS', flag:'🗽', line:'P&C'},
+  'ny_insurance_lh':  {name:'New York',      abbr:'NY', authority:'NYDFS', flag:'🗽', line:'L&H'},
+  'ca_insurance_pc':  {name:'California',    abbr:'CA', authority:'CDI',   flag:'🐻', line:'P&C'},
+  'ca_insurance_lh':  {name:'California',    abbr:'CA', authority:'CDI',   flag:'🐻', line:'L&H'},
+  'fl_insurance_pc':  {name:'Florida',       abbr:'FL', authority:'DFS',   flag:'🌴', line:'P&C'},
+  'fl_insurance_lh':  {name:'Florida',       abbr:'FL', authority:'DFS',   flag:'🌴', line:'L&H'},
+  'wa_insurance_pc':  {name:'Washington',    abbr:'WA', authority:'OIC',   flag:'🌲', line:'P&C'},
+  'wa_insurance_lh':  {name:'Washington',    abbr:'WA', authority:'OIC',   flag:'🌲', line:'L&H'},
+  'de_insurance_pc':  {name:'Delaware',      abbr:'DE', authority:'DDI',   flag:'💙', line:'P&C'},
+  'de_insurance_lh':  {name:'Delaware',      abbr:'DE', authority:'DDI',   flag:'💙', line:'L&H'},
+  'ma_insurance_pc':  {name:'Massachusetts', abbr:'MA', authority:'DOI',   flag:'🦞', line:'P&C'},
+  'ma_insurance_lh':  {name:'Massachusetts', abbr:'MA', authority:'DOI',   flag:'🦞', line:'L&H'},
+  'ga_insurance_pc':  {name:'Georgia',       abbr:'GA', authority:'OCI',   flag:'🍑', line:'P&C'},
+  'ga_insurance_lh':  {name:'Georgia',       abbr:'GA', authority:'OCI',   flag:'🍑', line:'L&H'},
+  'insurance_national_pc': {name:'National', abbr:'',   authority:'State DOI', flag:'🏛️', line:'P&C'},
+  'insurance_national_lh': {name:'National', abbr:'',   authority:'State DOI', flag:'🏛️', line:'L&H'},
+};
 let EXAM_TYPE = null; // set dynamically after login from user's purchased exam type
 const ALLOC = { guide:10, tutor:75, adaptive_exam:25, sim:10 };
 
