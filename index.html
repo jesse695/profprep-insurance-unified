@@ -470,7 +470,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
         </div>
         <div class="topic-bars-wrap" style="margin-bottom:0;border-color:rgba(196,98,45,.2)">
           <div class="tbl" style="color:var(--terra)"><span id="state-portion-label">State Portion — 20 Questions</span></div>
-          <div id="topic-bars-state"><div class="empty" style="padding:1rem"><p>Complete Oklahoma questions to see performance.</p></div></div>
+          <div id="topic-bars-state"><div class="empty" style="padding:1rem"><p id="state-portion-empty-text">Complete Oklahoma questions to see performance.</p></div></div>
         </div>
       </div>
       <div class="card">
@@ -763,6 +763,7 @@ async function setUser(user){
     const stateEl=document.getElementById('state-display'); if(stateEl) stateEl.textContent=stateInfo.flag+' '+stateInfo.name+' '+stateInfo.line+' License Exam';
     const spl=document.getElementById('state-portion-label'); if(spl) spl.textContent=(stateInfo.abbr||'State')+' State Portion — 20 Questions';
     const badge=document.getElementById('state-law-badge'); if(badge) badge.textContent=(stateInfo.abbr||'STATE')+' LAW';
+    const spet=document.getElementById('state-portion-empty-text'); if(spet) spet.textContent='Complete '+stateInfo.name+' questions to see performance.';
   }
   catch(e){console.warn('Access check failed:',e); EXAM_TYPE=EXAM_TYPE||'insurance_national_pc';}
   document.getElementById('auth-screen').style.display='none';
@@ -867,9 +868,9 @@ async function buildGuide(){
   const fMap={all:'Cover core concepts, practical application, and exam tips.',concepts:'Focus on core concepts and definitions.',law:'Focus heavily on state statutes, state DOI rules, and compliance requirements.',exam:'Focus on PSI exam tips, common wrong answers, and what the exam tests.'};
   const hasOK=okT.length>0;
   const stateNm3=STATE_MAP_INS[EXAM_TYPE]?STATE_MAP_INS[EXAM_TYPE].name:'State';
-  const okInstr=hasOK?' Use <div class="ok-callout"><div class="ok-callout-title">⚖️ '+stateNm3+' Law</div>...</div> for Oklahoma-specific rules.':'';
+  const okInstr=hasOK?' Use <div class="ok-callout"><div class="ok-callout-title">⚖️ '+stateNm3+' Law</div>...</div> for '+stateNm3+'-specific rules.':'';
   const sys=`You are an expert Insurance License PSI exam prep tutor. Create study guides in HTML: <h3> for sections, <h4> for subsections, <ul><li> for lists, <strong> for key terms, <p> for explanation, <div class="formula-box"> for formulas. End with <div class="alert"><div class="alert-title">🔑 PSI Exam Key Points</div>...</div>. HTML only.${okInstr}`;
-  try{out.innerHTML=await callGenerate(sys,[{role:'user',content:`Create a ${dMap[depth]} for an Oklahoma Real Estate license candidate on: "${topics.join(', ')}". ${fMap[focus]} Distinguish national content from Oklahoma-specific law where relevant.`}],1800);addAllocUsed('guide');await logSession('study_guide',topics.join(', '));}
+  try{out.innerHTML=await callGenerate(sys,[{role:'user',content:`Create a ${dMap[depth]} for an insurance license candidate in ${stateNm3} on: "${topics.join(', ')}". ${fMap[focus]} Distinguish national content from ${stateNm3}-specific law where relevant.`}],1800);addAllocUsed('guide');await logSession('study_guide',topics.join(', '));}
   catch(e){out.innerHTML=`<em style="color:var(--red)">Error: ${e.message}</em>`;}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-wand"></i> Build Study Guide';
 }
@@ -985,11 +986,12 @@ async function startSimulator(){
   const btn=document.getElementById('btn-sim');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Building transaction...';
   simData=null;document.getElementById('sim-area').style.display='block';document.getElementById('sim-config').style.display='none';
   const content=document.getElementById('sim-content');showLoading(content);
-  const sys='You are an expert Oklahoma real estate transaction simulator. Return ONLY valid JSON, no markdown. Create realistic Oklahoma residential transactions with specific OID rule references. Every field must be complete.';
-  const prompt=`Create a 7-stage ${state} insurance producer scenario simulation. Scenario type: ${typeLabel}. Include complication: ${compLabel}.
+  const stateInfoSim=STATE_MAP_INS[EXAM_TYPE]||{name:'the candidate\u2019s state',authority:'state DOI',line:'P&C'};
+  const sys=`You are an expert insurance producer scenario simulator, calibrated to ${stateInfoSim.name} and the ${stateInfoSim.line} line. Return ONLY valid JSON, no markdown. Create realistic ${stateInfoSim.name} insurance scenarios with specific ${stateInfoSim.authority} rule references. Every field must be complete.`;
+  const prompt=`Create a 7-stage ${stateInfoSim.name} insurance producer scenario simulation. Scenario type: ${typeLabel}. Include complication: ${compLabel}.
 Return this exact JSON:
-{"title":"descriptive scenario title","client":"client name and profile","policy":"policy type and key details","stages":[{"name":"stage name","situation":"2-3 sentence situation the producer faces","law_flag":"specific OID regulation or State Insurance Code section that applies","question":"What is the correct producer action?","options":["A. option","B. option","C. option","D. option"],"correct":0,"consequence":"Result of correct choice — coverage and compliance outcome.","wrong_consequence":"Result of wrong choice — license or E&O implications.","rationale":"Full explanation referencing Oklahoma insurance law."}]}
-Include all 7 stages: ${stageNames.join(', ')}. Insert the complication naturally at the appropriate stage. Make the scenario realistic — a real producer could face this in Oklahoma.`;
+{"title":"descriptive scenario title","client":"client name and profile","policy":"policy type and key details","stages":[{"name":"stage name","situation":"2-3 sentence situation the producer faces","law_flag":"specific ${stateInfoSim.authority} regulation or state insurance code section that applies","question":"What is the correct producer action?","options":["A. option","B. option","C. option","D. option"],"correct":0,"consequence":"Result of correct choice — coverage and compliance outcome.","wrong_consequence":"Result of wrong choice — license or E&O implications.","rationale":"Full explanation referencing ${stateInfoSim.name} insurance law."}]}
+Include all 7 stages: ${stageNames.join(', ')}. Insert the complication naturally at the appropriate stage. Make the scenario realistic — a real producer could face this in ${stateInfoSim.name}.`;
   try{
     const raw=await callGenerate(sys,[{role:'user',content:prompt}],3000);
     simData=JSON.parse(extractJSON(raw));renderSimStage(0);addAllocUsed('sim');await logSession('simulator',simData.title||type);
@@ -1011,8 +1013,8 @@ function renderSimStage(idx){
   document.getElementById('sim-content').innerHTML=`
     <div class="card">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-3);margin-bottom:.5rem">${simData.title} &middot; Stage ${idx+1} of ${stageNames.length}</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:.75rem">🏠 ${simData.property} &nbsp;|&nbsp; 👤 ${simData.client}</div>
-      ${s.law_flag?`<div class="ok-flag"><i class="ti ti-scale" style="font-size:9px"></i> Oklahoma Law: ${s.law_flag}</div>`:''}
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:.75rem">👤 ${simData.client||''} &nbsp;|&nbsp; 📄 ${simData.policy||''}</div>
+      ${s.law_flag?`<div class="ok-flag"><i class="ti ti-scale" style="font-size:9px"></i> ${(STATE_MAP_INS[EXAM_TYPE]&&STATE_MAP_INS[EXAM_TYPE].name)||'State'} Law: ${s.law_flag}</div>`:''}
       <div style="font-size:13px;line-height:1.75;color:var(--text)">${s.situation}</div>
     </div>
     <div class="qcard">
@@ -1083,8 +1085,9 @@ async function explainStatute(){
   const btn=document.getElementById('btn-statute');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Looking up...';
   const card=document.getElementById('statute-card'),out=document.getElementById('statute-out');
   card.style.display='block';showLoading(out);
-  const sys=`You are an Oklahoma real estate law expert. Explain Oklahoma statutes and State authority rules in plain English for license exam candidates. Use HTML: <h3> for rule names, <span class="statute-ref"> for specific citations, <ul><li> for requirements, <strong> for key terms. Always include: (1) plain English explanation, (2) consequence for violation, (3) practical transaction example. End with <div class="alert"><div class="alert-title">📋 PSI Exam Tip</div>what the exam tests about this rule</div>.`;
-  try{out.innerHTML=await callGenerate(sys,[{role:'user',content:`Explain for an Oklahoma Real Estate license candidate: "${query}". Include specific OID rule numbers or Oklahoma statute citations.`}],1200);await logSession('statute',query.substring(0,50));}
+  const stateInfo=STATE_MAP_INS[EXAM_TYPE]||{name:'the candidate\u2019s state',authority:'state DOI'};
+  const sys=`You are an insurance regulation expert for ${stateInfo.name}. Explain ${stateInfo.name} insurance statutes and ${stateInfo.authority} rules in plain English for insurance license exam candidates. Use HTML: <h3> for rule names, <span class="statute-ref"> for specific citations, <ul><li> for requirements, <strong> for key terms. Always include: (1) plain English explanation, (2) consequence for violation, (3) practical claims/policy example. End with <div class="alert"><div class="alert-title">📋 PSI Exam Tip</div>what the exam tests about this rule</div>.`;
+  try{out.innerHTML=await callGenerate(sys,[{role:'user',content:`Explain for an insurance license candidate in ${stateInfo.name}: "${query}". Include specific ${stateInfo.authority} rule numbers or ${stateInfo.name} statute citations.`}],1200);await logSession('statute',query.substring(0,50));}
   catch(e){out.innerHTML=`<em style="color:var(--red)">Error: ${e.message}</em>`;}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-scale"></i> Explain This';
 }
